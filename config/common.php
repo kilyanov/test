@@ -25,7 +25,7 @@ return [
             CommandBus::class => static function () {
                 $locator = new ServiceLocator([
                     'components' => [
-
+                            //todo для шин
                     ],
                 ]);
 
@@ -42,7 +42,8 @@ return [
         'definitions' => [
             AnswerInterface::class => static function () {
                 return BaseFactory::create();
-            },],
+            },
+        ],
     ],
     'components' => [
         'urlManager' => require(__DIR__ . '/frontend/urlManager.php'),

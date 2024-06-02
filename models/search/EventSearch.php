@@ -2,37 +2,17 @@
 
 declare(strict_types=1);
 
-namespace app\modules\event\models\search;
+namespace app\models\search;
 
 use app\modules\event\models\Event;
 use app\modules\event\models\EventOrganization;
 use Yii;
 use yii\base\InvalidConfigException;
-use yii\base\Model;
 use yii\data\ActiveDataProvider;
+use app\modules\event\models\search\EventSearch as EventSearchAlias;
 
-class EventSearch extends Event
+class EventSearch extends EventSearchAlias
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function rules(): array
-    {
-        return [
-            [['hidden', 'id'], 'integer'],
-            [['name', 'description'], 'string'],
-            [['createdAt', 'updatedAt', 'dateEvent', 'organizationIds'], 'safe'],
-        ];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function scenarios(): array
-    {
-        return Model::scenarios();
-    }
-
     /**
      * @param array $params
      * @return ActiveDataProvider
@@ -40,13 +20,13 @@ class EventSearch extends Event
      */
     public function search(array $params): ActiveDataProvider
     {
-        $query = Event::find()->joinWith(['eventOrganizationsRelation']);
+        $query = Event::find()->hidden()->joinWith(['eventOrganizationsRelation']);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
             'sort' => [
                 'defaultOrder' => [
-                    'createdAt' => SORT_DESC,
+                    'dateEvent' => SORT_DESC,
                 ]
             ]
         ]);

@@ -2,14 +2,17 @@
 
 namespace app\modules\event\models;
 
+use app\modules\event\behaviors\DateEventBehavior;
 use app\modules\event\models\query\EventQuery;
-use app\modules\organizator\models\OrganizationEvent;
+use app\modules\organizator\models\Organizator;
+use kilyanov\ajax\grid\interface\HiddenAttributeInterface;
 use kilyanov\ajax\grid\traits\HiddenAttributeTrait;
 use kilyanov\behaviors\common\TimestampBehavior;
 use voskobovich\linker\LinkerBehavior;
 use yii\base\InvalidConfigException;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "{{%event}}".
@@ -22,10 +25,11 @@ use yii\db\ActiveRecord;
  * @property string|null $createdAt
  * @property string|null $updatedAt
  *
+ * @property array $organizationIds
+ *
  * @property EventOrganization[] $eventOrganizationsRelation
- * @property OrganizationEvent[] $organizationEventsRelation
  */
-class Event extends ActiveRecord
+class Event extends ActiveRecord implements HiddenAttributeInterface
 {
     use HiddenAttributeTrait;
 
@@ -38,11 +42,14 @@ class Event extends ActiveRecord
             'TimestampBehavior' => [
                 'class' => TimestampBehavior::class,
             ],
+            'DateEventBehavior' => [
+                'class' => DateEventBehavior::class,
+            ],
             'LinkerBehavior' => [
                 'class' => LinkerBehavior::class,
                 'relations' => [
                     'organizationIds' => [
-                        'servicesRelation',
+                        'eventOrganizationsRelation',
                     ],
                 ],
             ],
@@ -68,6 +75,8 @@ class Event extends ActiveRecord
             [['description'], 'string'],
             [['hidden'], 'integer'],
             [['name'], 'string', 'max' => 255],
+            /** virtual */
+            [['organizationIds'], 'each', 'rule' => ['integer']],
         ];
     }
 
@@ -84,6 +93,8 @@ class Event extends ActiveRecord
             'hidden' => 'Скрыто',
             'createdAt' => 'Created At',
             'updatedAt' => 'Updated At',
+            /** virtual */
+            'organizationIds' => 'Организаторы'
         ];
     }
 
@@ -91,18 +102,10 @@ class Event extends ActiveRecord
      * @return ActiveQuery
      * @throws InvalidConfigException
      */
-    public function getEventOrganizationsRelation()
+    public function getEventOrganizationsRelation(): ActiveQuery
     {
-        return $this->hasMany(EventOrganization::class, ['id' => 'eventId'])
+        return $this->hasMany(Organizator::class, ['id' => 'organizatorId'])
             ->viaTable(EventOrganization::tableName(), ['eventId' => 'id']);
-    }
-
-    /**
-     * @return ActiveQuery
-     */
-    public function getOrganizationEventsRelation()
-    {
-        return $this->hasMany(OrganizationEvent::class, ['eventId' => 'id']);
     }
 
     /**
@@ -111,5 +114,14 @@ class Event extends ActiveRecord
     public static function find()
     {
         return new EventQuery(get_called_class());
+    }
+
+    /**
+     * @return array
+     */
+    public static function asDropDown(): array
+    {
+        $models = self::find()->hidden()->all();
+        return ArrayHelper::map($models, 'id', 'name');
     }
 }

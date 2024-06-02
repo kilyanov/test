@@ -1,9 +1,6 @@
 <?php
 
-use app\common\Request;
-use yii\di\ServiceLocator;
 use yii\helpers\ArrayHelper;
-use yii\rbac\DbManager;
 
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
@@ -12,10 +9,6 @@ $config = [
     'id' => 'test',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
-    'aliases' => [
-        '@bower' => '@vendor/bower-asset',
-        '@npm'   => '@vendor/npm-asset',
-    ],
     'modules' => [
         'admin' => [
             'class' => app\modules\admin\Module::class,

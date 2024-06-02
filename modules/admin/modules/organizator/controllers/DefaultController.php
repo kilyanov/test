@@ -2,19 +2,22 @@
 
 namespace app\modules\admin\modules\organizator\controllers;
 
-use yii\web\Controller;
+use app\common\rbac\CollectionRolls;
+use app\modules\organizator\models\Organizator;
+use app\modules\organizator\models\search\OrganizatorSearch;
+use kilyanov\ajax\controller\ApplicationController;
 
-/**
- * Default controller for the `organizator` module
- */
-class DefaultController extends Controller
+class DefaultController extends ApplicationController
 {
     /**
-     * Renders the index view for the module
-     * @return string
+     * @return void
      */
-    public function actionIndex()
+    public function init(): void
     {
-        return $this->render('index');
+        $this->setListAccess([CollectionRolls::ROLE_ROOT]);
+        $this->setModelClass(Organizator::class);
+        $this->setSearchModelClass(OrganizatorSearch::class);
+        parent::init();
+        $this->layout = '/main-admin';
     }
 }

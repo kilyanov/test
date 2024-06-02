@@ -4,6 +4,7 @@
 /** @var string $content */
 
 use app\assets\AppAsset;
+use app\common\rbac\CollectionRolls;
 use app\widgets\Alert;
 use yii\bootstrap5\Breadcrumbs;
 use yii\bootstrap5\Html;
@@ -39,9 +40,18 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav'],
         'items' => [
-            ['label' => 'Home', 'url' => ['/']],
+            [
+                'label' => 'События',
+                'url' => ['/admin/event'],
+                'visible' => Yii::$app->user->can(CollectionRolls::ROLE_ROOT)
+            ],
+            [
+                'label' => 'Организаторы',
+                'url' => ['/admin/organizator'],
+                'visible' => Yii::$app->user->can(CollectionRolls::ROLE_ROOT)
+            ],
             Yii::$app->user->isGuest
-                ? ['label' => 'Войти', 'url' => ['/site/login']]
+                ? ['label' => 'Login', 'url' => ['/site/login']]
                 : '<li class="nav-item">'
                     . Html::beginForm(['/site/logout'])
                     . Html::submitButton(

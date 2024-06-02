@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use app\modules\admin\modules\event\grid\OrganizatorColumn;
 use kilyanov\ajax\grid\ActionColumn;
 use kilyanov\ajax\grid\HiddenColumn;
 use kilyanov\ajax\widgets\GroupButtonWidget;
@@ -12,6 +13,7 @@ use yii\data\ActiveDataProvider;
 use yii\db\ActiveQuery;
 use yii\grid\CheckboxColumn;
 use yii\grid\GridView;
+use yii\jui\DatePicker;
 use yii\widgets\Pjax;
 
 /**
@@ -21,14 +23,13 @@ use yii\widgets\Pjax;
  * @var array $listAccess
  */
 
-$this->title = 'Изделия';
+$this->title = 'События';
 
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
 
 <?= GroupButtonWidget::widget(['access' => $listAccess]) ?>
-
 
 <?php Pjax::begin(['id' => $forceReload]); ?>
 <?= GridView::widget([
@@ -44,8 +45,20 @@ $this->params['breadcrumbs'][] = $this->title;
             'class' => ActionColumn::class,
         ],
         'name',
-        'dateEvent',
+        [
+            'attribute' => 'dateEvent',
+            'filter' => DatePicker::widget([
+                'model'=> $model,
+                'attribute'=>'dateEvent',
+                'language' => 'ru',
+                'dateFormat' => 'dd.MM.yyyy',
+            ]),
+            'format' => 'html',
+        ],
         'description',
+        [
+            'class' => OrganizatorColumn::class,
+        ],
         [
             'class' => HiddenColumn::class,
         ],

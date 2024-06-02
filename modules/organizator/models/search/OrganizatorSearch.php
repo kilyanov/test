@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace app\modules\organizator\models\search;
 
+use app\modules\event\models\EventOrganization;
 use app\modules\organizator\models\Organizator;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
@@ -18,7 +19,7 @@ class OrganizatorSearch extends Organizator
         return [
             [['hidden', 'id'], 'integer'],
             [['fio', 'email', 'phone'], 'string'],
-            [['createdAt', 'updatedAt'], 'safe'],
+            [['createdAt', 'updatedAt', 'eventIds'], 'safe'],
         ];
     }
 
@@ -31,15 +32,12 @@ class OrganizatorSearch extends Organizator
     }
 
     /**
-     * Creates data provider instance with search query applied
-     *
      * @param array $params
-     *
      * @return ActiveDataProvider
      */
     public function search(array $params): ActiveDataProvider
     {
-        $query = Organizator::find()->hidden();
+        $query = Organizator::find()->joinWith(['organizationEventsRelation']);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -59,6 +57,9 @@ class OrganizatorSearch extends Organizator
         $query->andFilterWhere([
             Organizator::tableName() . '.[[hidden]]' => $this->hidden
         ])
+            ->andFilterWhere([
+                EventOrganization::tableName() . '.[[eventId]]' => $this->eventIds
+            ])
             ->andFilterWhere([
                 Organizator::tableName() . '.[[id]]' => $this->id
             ])

@@ -2,7 +2,10 @@
 
 namespace app\controllers;
 
+use app\common\rbac\CollectionRolls;
+use app\models\search\EventSearch;
 use Yii;
+use yii\base\InvalidConfigException;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
@@ -50,6 +53,18 @@ class SiteController extends Controller
     }
 
     /**
+     * @return string
+     * @throws InvalidConfigException
+     */
+    public function actionIndex(): string
+    {
+        $model = new EventSearch();
+        $dataProvider = $model->search(Yii::$app->getRequest()->getQueryParams());
+
+        return $this->render('index', ['dataProvider' => $dataProvider]);
+    }
+
+    /**
      * @return Response|string
      */
     public function actionLogin(): Response|string
@@ -60,6 +75,10 @@ class SiteController extends Controller
 
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
+            /** todo кастыльно сделал */
+            if (Yii::$app->user->can(CollectionRolls::ROLE_ROOT)) {
+                return $this->redirect(['/admin/event']);
+            }
             return $this->goBack();
         }
 

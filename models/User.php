@@ -13,7 +13,7 @@ use yii\web\IdentityInterface;
 /**
  * This is the model class for table "{{%user}}".
  *
- * @property string $id ID
+ * @property int $id ID
  * @property string $username Логин
  * @property string $unitId Подразделение
  * @property string $auth_key Ключ
@@ -23,12 +23,14 @@ use yii\web\IdentityInterface;
  * @property string|null $verification_token Токен регистрации
  * @property int $status
  * @property string $createdAt
+ * @property-read string $statusValue
+ * @property-write string $password
+ * @property-read string $authKey
  * @property string $updatedAt
  *
  */
 class User extends ActiveRecord implements IdentityInterface
 {
-
     public const STATUS_BLOCK = -1;
     public const STATUS_INACTIVE = 0;
     public const STATUS_ACTIVE = 1;
@@ -196,9 +198,9 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
-     * @return string
+     * @return string|int
      */
-    public function getId(): string
+    public function getId(): string|int
     {
         return $this->id;
     }

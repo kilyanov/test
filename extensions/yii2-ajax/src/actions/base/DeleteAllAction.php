@@ -31,17 +31,11 @@ class DeleteAllAction extends BaseAction
                 $classNameModel = $controller->getModelClass();
                 /** @var ActiveRecord $classNameModel */
                 $model = new $classNameModel();
-                if ($model->hasProperty('hidden')) {
-                    $classNameModel::updateAll(
-                        [$classNameModel::tableName() . '.[[hidden]]' => HiddenAttributeInterface::HIDDEN_YES],
-                        [$classNameModel::tableName() . '.[[id]]' => $params]
-                    );
-                }
-                else {
-                    $classNameModel::deleteAll([
-                        $classNameModel::tableName() . '.[[id]]' => $params
-                    ]);
-                }
+
+                $classNameModel::deleteAll([
+                    $classNameModel::tableName() . '.[[id]]' => $params
+                ]);
+
                 $transaction->commit();
                 $controller
                     ->getAnswer()
@@ -54,8 +48,7 @@ class DeleteAllAction extends BaseAction
                     ->setElements(CollectionButtonCloseFactory::create());
 
                 return $controller->getAnswer()->isPost();
-            }
-            catch (Exception $exception) {
+            } catch (Exception $exception) {
                 $transaction->rollBack();
                 $controller
                     ->getAnswer()

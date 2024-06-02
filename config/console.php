@@ -2,7 +2,6 @@
 
 use yii\console\controllers\MigrateController;
 use yii\helpers\ArrayHelper;
-use yii\rbac\DbManager;
 
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';

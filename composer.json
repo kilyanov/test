@@ -31,7 +31,9 @@
         "kilyanov/yii2-behaviors": "0.0.1",
         "ext-intl": "*",
         "kilyanov/yii2-ajax": "1.1.1",
-        "voskobovich/yii2-linker-behavior": "~4.1.0"
+        "voskobovich/yii2-linker-behavior": "~4.1.0",
+        "kartik-v/yii2-widget-datepicker": "dev-master",
+        "yiisoft/yii2-jui": "~2.0.7"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

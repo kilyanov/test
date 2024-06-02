@@ -19,11 +19,11 @@ class UserController extends Controller
     {
         $auth = Yii::$app->authManager;
         $userRoot = new User([
-            'username' => 'alex',
-            'email' => 'lsd-7d@yandex.ru',
+            'username' => 'admin',
+            'email' => 'admin@admin.loc',
             'status' => User::STATUS_ACTIVE,
         ]);
-        $userRoot->setPassword('1901');
+        $userRoot->setPassword('admin');
         $userRoot->generateAuthKey();
         $userRoot->save();
         $rootRole = $auth->getRole(CollectionRolls::ROLE_ROOT);

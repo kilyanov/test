@@ -2,13 +2,17 @@
 
 namespace app\modules\organizator\models;
 
+use app\modules\event\models\Event;
 use app\modules\event\models\EventOrganization;
 use app\modules\organizator\models\query\OrganizatorQuery;
+use kilyanov\ajax\grid\interface\HiddenAttributeInterface;
+use kilyanov\ajax\grid\traits\HiddenAttributeTrait;
 use kilyanov\behaviors\common\TimestampBehavior;
 use voskobovich\linker\LinkerBehavior;
 use yii\base\InvalidConfigException;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "{{%organizator}}".
@@ -21,11 +25,14 @@ use yii\db\ActiveRecord;
  * @property string|null $createdAt
  * @property string|null $updatedAt
  *
+ * @property array $eventIds
+ *
  * @property EventOrganization[] $eventOrganizationsRelation
- * @property OrganizationEvent[] $organizationEventsRelation
  */
-class Organizator extends ActiveRecord
+class Organizator extends ActiveRecord implements HiddenAttributeInterface
 {
+    use HiddenAttributeTrait;
+
     /**
      * @return array
      */
@@ -64,6 +71,11 @@ class Organizator extends ActiveRecord
             [['hidden'], 'integer'],
             [['createdAt', 'updatedAt'], 'safe'],
             [['fio', 'email', 'phone'], 'string', 'max' => 255],
+            ['email', 'email'],
+            ['email', 'unique'],
+            ['phone', 'unique'],
+            /** virtual */
+            [['eventIds'], 'each', 'rule' => ['integer']],
         ];
     }
 
@@ -80,25 +92,19 @@ class Organizator extends ActiveRecord
             'hidden' => 'Скрыто',
             'createdAt' => 'Created At',
             'updatedAt' => 'Updated At',
+            /** virtual */
+            'eventIds' => 'События'
         ];
-    }
-
-    /**
-     * @return ActiveQuery
-     */
-    public function getEventOrganizationsRelation()
-    {
-        return $this->hasMany(EventOrganization::class, ['organizatorId' => 'id']);
     }
 
     /**
      * @return ActiveQuery
      * @throws InvalidConfigException
      */
-    public function getOrganizationEventsRelation()
+    public function getOrganizationEventsRelation(): ActiveQuery
     {
-        return $this->hasMany(OrganizationEvent::class, ['id' => 'organizatorId'])
-            ->viaTable(OrganizationEvent::tableName(), ['organizatorId' => 'id']);
+        return $this->hasMany(Event::class, ['id' => 'eventId'])
+            ->viaTable(EventOrganization::tableName(), ['organizatorId' => 'id']);
     }
 
     /**
@@ -107,5 +113,14 @@ class Organizator extends ActiveRecord
     public static function find()
     {
         return new OrganizatorQuery(get_called_class());
+    }
+
+    /**
+     * @return array
+     */
+    public static function asDropDown(): array
+    {
+        $models = self::find()->hidden()->all();
+        return ArrayHelper::map($models, 'id', 'fio');
     }
 }
